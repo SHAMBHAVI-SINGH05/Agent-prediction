@@ -44,7 +44,7 @@ Thumbs.db
 desktop.ini
 
 # Data files and model artifacts
-*.pkl
+
 *.joblib
 *.h5
 *.hdf5

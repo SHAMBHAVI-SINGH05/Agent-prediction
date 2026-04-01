@@ -38,9 +38,32 @@ def predict():
                 "Traffic Level_Medium", "Order Type_Food", "Order Type_Grocery",
                 "Area Type_Urban"
             ]
+            # Convert form input into the encoded values used during training.
+            date_input = int(request.form.get("Date"))
+            if 1 <= date_input <= 7:
+                encoded_date = date_input - 1
+            elif 0 <= date_input <= 6:
+                encoded_date = date_input
+            else:
+                raise ValueError("Date must be between 1 and 7 for this dataset.")
+
+            day_input = int(request.form.get("Day"))
+            day_mapping = {
+                1: 1,  # Monday
+                2: 5,  # Tuesday
+                3: 6,  # Wednesday
+                4: 4,  # Thursday
+                5: 0,  # Friday
+                6: 2,  # Saturday
+                7: 3   # Sunday
+            }
+            if day_input not in day_mapping:
+                raise ValueError("Day must be 1-7, corresponding to Monday-Sunday.")
+            encoded_day = day_mapping[day_input]
+
             sample_values = [
-                int(request.form.get("Date")),
-                int(request.form.get("Day")),
+                encoded_date,
+                encoded_day,
                 int(request.form.get("Hour")),
                 float(request.form.get("Temperature")),
                 int(request.form.get("Rain")),
