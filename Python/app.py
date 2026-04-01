@@ -38,27 +38,33 @@ def predict():
                 "Traffic Level_Medium", "Order Type_Food", "Order Type_Grocery",
                 "Area Type_Urban"
             ]
-            # Convert form input into the encoded values used during training.
-            date_input = int(request.form.get("Date"))
-            if 1 <= date_input <= 7:
-                encoded_date = date_input - 1
-            elif 0 <= date_input <= 6:
-                encoded_date = date_input
-            else:
-                raise ValueError("Date must be between 1 and 7 for this dataset.")
+            # Convert dataset-style form input into the encoded values used by the trained model.
+            date_input = request.form.get("Date")
+            date_mapping = {
+                "2024-06-01": 0,
+                "2024-06-02": 1,
+                "2024-06-03": 2,
+                "2024-06-04": 3,
+                "2024-06-05": 4,
+                "2024-06-06": 5,
+                "2024-06-07": 6,
+            }
+            if date_input not in date_mapping:
+                raise ValueError("Date must be one of 2024-06-01 through 2024-06-07.")
+            encoded_date = date_mapping[date_input]
 
-            day_input = int(request.form.get("Day"))
+            day_input = request.form.get("Day")
             day_mapping = {
-                1: 1,  # Monday
-                2: 5,  # Tuesday
-                3: 6,  # Wednesday
-                4: 4,  # Thursday
-                5: 0,  # Friday
-                6: 2,  # Saturday
-                7: 3   # Sunday
+                "Monday": 1,
+                "Tuesday": 5,
+                "Wednesday": 6,
+                "Thursday": 4,
+                "Friday": 0,
+                "Saturday": 2,
+                "Sunday": 3,
             }
             if day_input not in day_mapping:
-                raise ValueError("Day must be 1-7, corresponding to Monday-Sunday.")
+                raise ValueError("Day must be one of Monday-Sunday.")
             encoded_day = day_mapping[day_input]
 
             sample_values = [
