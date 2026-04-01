@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 import numpy as np
 import pickle
+import joblib
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -14,10 +15,9 @@ STATIC_DIR = os.path.normpath(os.path.join(BASE_DIR, "..", "static"))
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
 # Load model and scaler
-model_path = os.path.join(BASE_DIR, "..", "agent_model.pkl")
+model_path = os.path.join(BASE_DIR, "..", "lasso_model.pkl")
 scaler_path = os.path.join(BASE_DIR, "..", "agent_scaler.pkl")
-with open(model_path, "rb") as f:
-    model = pickle.load(f)
+model = joblib.load(model_path)
 with open(scaler_path, "rb") as f:
     scaler = pickle.load(f)
 
