@@ -1,0 +1,62 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# PyCharm / VS Code / IDE settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local environment
+.python-version
+pip-wheel-metadata/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.swp
+*.bak
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data files and model artifacts
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.csv
+*.xlsx
+*.xls
+
+# Unwanted generated files
+*.cache
+*.out
+
+# Temporary Office files
+~$*
+*.pdf
+*.docx

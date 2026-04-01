@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Agent Prediction</title>
+    <style>
+        :root {
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+            --text: #1f2937;
+            --muted: #4b5563;
+            --primary: #2563eb;
+            --primary-strong: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --border: #e5e7eb;
+            --radius: 20px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, sans-serif;
+            background: radial-gradient(circle at top, rgba(37,99,235,0.18), transparent 35%),
+                        linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+            color: var(--text);
+        }
+        .page {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 32px 0 48px;
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(2rem, 3vw, 3rem);
+            letter-spacing: -0.03em;
+        }
+        .hero p {
+            margin: 16px auto 0;
+            max-width: 680px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid rgba(148,163,184,0.3);
+            border-radius: var(--radius);
+            box-shadow: 0 30px 70px rgba(15,23,42,0.08);
+            overflow: hidden;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 1px;
+            background: linear-gradient(90deg, rgba(37,99,235,0.12), transparent);
+        }
+        .panel {
+            padding: 32px;
+            background: var(--surface);
+        }
+        .panel:nth-child(2) {
+            background: var(--surface-alt);
+        }
+        .section {
+            margin-bottom: 24px;
+        }
+        .section h2 {
+            margin: 0 0 18px;
+            font-size: 1.05rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+        .section p {
+            margin: 0 0 16px;
+            color: var(--muted);
+        }
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+        .schedule-grid {
+            grid-template-columns: repeat(3, minmax(220px, 1fr));
+        }
+        label {
+            display: grid;
+            gap: 8px;
+            font-size: 0.92rem;
+            color: #334155;
+        }
+        input[type="number"], select {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #ffffff;
+            padding: 14px 16px;
+            color: var(--text);
+            transition: border-color 0.2s ease;
+        }
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
+        }
+        .note {
+            font-size: 0.84rem;
+            color: var(--muted);
+        }
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        button:hover {
+            background: var(--primary-strong);
+            transform: translateY(-1px);
+        }
+        .alert {
+            border-radius: 18px;
+            padding: 18px 22px;
+            margin-top: 24px;
+            border: 1px solid transparent;
+        }
+        .alert-success {
+            background: #ecfdf5;
+            border-color: #d1fae5;
+            color: #166534;
+        }
+        .alert-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+        .result-box {
+            margin-top: 24px;
+            padding: 24px;
+            border-radius: 20px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+        }
+        .result-box h3 {
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+        }
+        .result-box strong {
+            color: #1e3a8a;
+        }
+        .image-preview {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 18px;
+            margin-top: 18px;
+            box-shadow: 0 20px 50px rgba(15,23,42,0.1);
+        }
+        @media (max-width: 900px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <p style="margin-bottom:8px;color:#2563eb;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Delivery prediction</p>
+            <h1>Predict the number of delivery agents you need</h1>
+            <p>Fill in the delivery and weather details below to get an agent estimate. The form is grouped by business context for a cleaner workflow.</p>
+        </section>
+
+        <div class="card">
+            <div class="card-grid">
+                <div class="panel">
+                    <form method="post">
+                        <div class="section">
+                            <h2>Delivery schedule</h2>
+                            <div class="grid schedule-grid">
+                                <label>Day of Month
+                                    <select name="Date" required>
+                                        <option value="" disabled selected>Select day</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                        <option value="24">24</option>
+                                        <option value="25">25</option>
+                                        <option value="26">26</option>
+                                        <option value="27">27</option>
+                                        <option value="28">28</option>
+                                        <option value="29">29</option>
+                                        <option value="30">30</option>
+                                        <option value="31">31</option>
+                                    </select>
+                                    <span class="note">Use the numeric day value from your dataset.</span>
+                                </label>
+                                <label>Day of Week
+                                    <select name="Day" required>
+                                        <option value="" disabled selected>Select weekday</option>
+                                        <option value="1">Monday</option>
+                                        <option value="2">Tuesday</option>
+                                        <option value="3">Wednesday</option>
+                                        <option value="4">Thursday</option>
+                                        <option value="5">Friday</option>
+                                        <option value="6">Saturday</option>
+                                        <option value="7">Sunday</option>
+                                    </select>
+                                    <span class="note">Model uses weekday codes 1–7.</span>
+                                </label>
+                                <label>Hour of Day
+                                    <select name="Hour" required>
+                                        <option value="" disabled selected>Select hour</option>
+                                        <option value="0">00:00</option>
+                                        <option value="1">01:00</option>
+                                        <option value="2">02:00</option>
+                                        <option value="3">03:00</option>
+                                        <option value="4">04:00</option>
+                                        <option value="5">05:00</option>
+                                        <option value="6">06:00</option>
+                                        <option value="7">07:00</option>
+                                        <option value="8">08:00</option>
+                                        <option value="9">09:00</option>
+                                        <option value="10">10:00</option>
+                                        <option value="11">11:00</option>
+                                        <option value="12">12:00</option>
+                                        <option value="13">13:00</option>
+                                        <option value="14">14:00</option>
+                                        <option value="15">15:00</option>
+                                        <option value="16">16:00</option>
+                                        <option value="17">17:00</option>
+                                        <option value="18">18:00</option>
+                                        <option value="19">19:00</option>
+                                        <option value="20">20:00</option>
+                                        <option value="21">21:00</option>
+                                        <option value="22">22:00</option>
+                                        <option value="23">23:00</option>
+                                    </select>
+                                    <span class="note">Choose hour in 24-hour format.</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Weather & conditions</h2>
+                            <div class="grid">
+                                <label>Temperature (°C)
+                                    <input name="Temperature" type="number" step="0.1" placeholder="25.4" required>
+                                </label>
+                                <label>Rain
+                                    <select name="Rain" required>
+                                        <option value="" disabled selected>Select</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </label>
+                                <label>Holiday
+                                    <select name="Holiday" required>
+                                        <option value="" disabled selected>Select</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>Order details</h2>
+                            <div class="grid">
+                                <label>Orders
+                                    <input name="Orders" type="number" min="0" placeholder="120" required>
+                                </label>
+                                <label>Promised Time (min)
+                                    <input name="Promised" type="number" min="0" placeholder="30" required>
+                                </label>
+                                <label>Actual Time (min)
+                                    <input name="Actual" type="number" min="0" placeholder="28" required>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>Performance metrics</h2>
+                            <div class="grid">
+                                    <label>Delivered On Time
+                                        <select name="Delivered" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Early By (min)
+                                        <input name="Early" type="number" min="0" placeholder="5" required>
+                                    </label>
+                                    <label>Delay By (min)
+                                        <input name="Delay" type="number" min="0" placeholder="2" required>
+                                    </label>
+                                    <label>Timing Deviation Cost
+                                        <input name="Cost" type="number" min="0" placeholder="45" required>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="section">
+                                <h2>Special flags</h2>
+                                <p class="note">Choose Yes or No for each flag.</p>
+                                <div class="grid">
+                                    <label>Offer Active
+                                        <select name="Offer" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Competitor
+                                        <select name="Competitor" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Company JioMart
+                                        <select name="JioMart" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Company Swiggy
+                                        <select name="Swiggy" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Company Zepto
+                                        <select name="Zepto" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Traffic Low
+                                        <select name="TrafficLow" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Traffic Medium
+                                        <select name="TrafficMedium" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Order Type Food
+                                        <select name="Food" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Order Type Grocery
+                                        <select name="Grocery" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                    <label>Area Type Urban
+                                        <select name="Urban" required>
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+
+                        <div class="actions">
+                            <button type="submit">Predict Agents</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <div class="section">
+                        <h2>How it works</h2>
+                        <p>Use this form to estimate how many delivery agents your service will need based on time, weather, order volume, and historical delivery performance.</p>
+                    </div>
+                    <div class="section">
+                        <h2>Tips</h2>
+                        <ul class="note" style="padding-left:18px; margin:0;">
+                            <li>Use binary values only for flag fields (0 or 1).</li>
+                            <li>Keep `Hour` in 24-hour format.</li>
+                            <li>`Date` and `Day` should follow the same encoding used by your dataset.</li>
+                        </ul>
+                    </div>
+                    <div class="section">
+                        <h2>Result</h2>
+                        {% if prediction is not none %}
+                            <div class="result-box">
+                                <h3>Predicted Agents Needed</h3>
+                                <p><strong>{{ prediction }}</strong></p>
+                            </div>
+                        {% else %}
+                            <p class="note">Submit the form to run the prediction model and view the result here.</p>
+                        {% endif %}
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                <strong>Error:</strong> {{ error }}
+                            </div>
+                        {% endif %}
+                        {% if graph %}
+                            <div class="section">
+                                <h2>Prediction Graph</h2>
+                                <img src="{{ url_for('static', filename='graph_actual_vs_predicted.png') }}" alt="Actual vs Predicted" class="image-preview">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

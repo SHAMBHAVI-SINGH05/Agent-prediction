@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delivery Agent Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background-color: #f7f7f7;
+        }
+        form input {
+            padding: 5px;
+            margin: 5px;
+        }
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Predict Delivery Agents Needed</h1>
+
+    <form method="post">
+        <!-- Add all your input fields here -->
+        <label>Date
+            <select name="Date" required>
+                <option value="" disabled selected>Select day</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
+            </select><br>
+        </label>
+        <label>Day
+            <select name="Day" required>
+                <option value="" disabled selected>Select weekday</option>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="7">Sunday</option>
+            </select><br>
+        </label>
+        <label>Hour
+            <select name="Hour" required>
+                <option value="" disabled selected>Select hour</option>
+                <option value="0">00:00</option>
+                <option value="1">01:00</option>
+                <option value="2">02:00</option>
+                <option value="3">03:00</option>
+                <option value="4">04:00</option>
+                <option value="5">05:00</option>
+                <option value="6">06:00</option>
+                <option value="7">07:00</option>
+                <option value="8">08:00</option>
+                <option value="9">09:00</option>
+                <option value="10">10:00</option>
+                <option value="11">11:00</option>
+                <option value="12">12:00</option>
+                <option value="13">13:00</option>
+                <option value="14">14:00</option>
+                <option value="15">15:00</option>
+                <option value="16">16:00</option>
+                <option value="17">17:00</option>
+                <option value="18">18:00</option>
+                <option value="19">19:00</option>
+                <option value="20">20:00</option>
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+            </select><br>
+        </label>
+        Temperature: <input type="text" name="Temperature" required><br>
+        Rain: <input type="number" name="Rain" required><br>
+        Holiday: <input type="number" name="Holiday" required><br>
+        Offer: <input type="number" name="Offer" required><br>
+        Competitor: <input type="number" name="Competitor" required><br>
+        Orders: <input type="number" name="Orders" required><br>
+        Promised: <input type="number" name="Promised" required><br>
+        Actual: <input type="number" name="Actual" required><br>
+        Delivered: <input type="number" name="Delivered" required><br>
+        Early: <input type="number" name="Early" required><br>
+        Delay: <input type="number" name="Delay" required><br>
+        Cost: <input type="number" name="Cost" required><br>
+        JioMart: <input type="number" name="JioMart" required><br>
+        Swiggy: <input type="number" name="Swiggy" required><br>
+        Zepto: <input type="number" name="Zepto" required><br>
+        TrafficLow: <input type="number" name="TrafficLow" required><br>
+        TrafficMedium: <input type="number" name="TrafficMedium" required><br>
+        Food: <input type="number" name="Food" required><br>
+        Grocery: <input type="number" name="Grocery" required><br>
+        Urban: <input type="number" name="Urban" required><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+        <div class="result">
+            <strong>Predicted Agents Required:</strong> {{ prediction }}
+        </div>
+    {% endif %}
+
+    {% if graph %}
+        <div style="margin-top:30px;">
+            <h3>📊 Actual vs Predicted Graph</h3>
+            <img src="{{ url_for('static', filename='graph_actual_vs_predicted.png') }}" alt="Graph"
+                 style="width: 80%; border:1px solid #ddd; padding:10px;">
+        </div>
+    {% endif %}
+</body>
+</html>
